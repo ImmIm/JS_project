@@ -2,9 +2,16 @@ import PriorityQueue from '../helperClasses/PriorityQueue.js';
 
 export default class AStarSearch {
   #problem;
+  #iterationCounter
 
   constructor(problem) {
     this.#problem = problem;
+    this.#iterationCounter = 0
+
+  }
+
+  get iterationCounter(){
+    return this.#iterationCounter
   }
 
   AStarAlgorithm() {
@@ -12,22 +19,19 @@ export default class AStarSearch {
       state: this.#problem.startState,
       path: [],
       cost: 0,
-      heuristic: this.heuristic(this.#problem.startState),
+      heuristic: this.heuristic(this.#problem.startState , 0),
     };
 
     let frontier = new PriorityQueue(
       (state1, state2) =>
-        state1.heuristic + state1.cost > state2.heuristic + state2.cost
+        state1.heuristic + state1.cost < state2.heuristic + state2.cost
     );
 
     frontier.push(startState);
-
-    console.log(frontier);
-
     let visited = new Set();
 
     while (!frontier.isEmpty()) {
-      console.log('iteration');
+      this.#iterationCounter = visited.size
       let currentNode = frontier.pop();
       visited.add(currentNode.state.hash);
 
@@ -41,8 +45,8 @@ export default class AStarSearch {
         let nextNode = {
           state: this.#problem.getNextState(currentNode.state, action),
           path: [...currentNode.path, currentNode.state],
-          cost: currentNode.steps + 1,
-          heuristic: this.heuristic(currentNode.state),
+          cost: currentNode.cost + 1,
+          heuristic: this.heuristic(currentNode.state, currentNode.cost + 1),
         };
 
         if (!visited.has(nextNode.state.hash)) {
@@ -59,12 +63,17 @@ export default class AStarSearch {
     return false;
   }
 
-  heuristic(state) {
+  run(){
+    return this.AStarAlgorithm()
+  }
+
+  heuristic(state, d) {
     let goal = this.#problem.goalState;
-    return (
-      Math.abs(goal.layer - state.layer) +
-      Math.abs(goal.row - state.row) +
-      Math.abs(goal.column - state.column)
-    );
+
+    let dz = Math.abs(state.layer - goal.layer)
+    let dx = Math.abs(state.row - goal.row)
+    let dy = Math.abs(state.column - goal.column)
+
+    return  d * (dx + dy + dz) + (d - 2 * 1) * Math.min(dx, dy, dz)
   }
 }

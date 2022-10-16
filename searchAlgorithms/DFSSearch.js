@@ -1,9 +1,16 @@
 export default class DeapthFirstSearch {
-   #problem;
- 
-   constructor(problem) {
-     this.#problem = problem;
-   }
+  #problem;
+  #iterationCounter
+
+  constructor(problem) {
+    this.#problem = problem;
+    this.#iterationCounter = 0
+
+  }
+
+  get iterationCounter(){
+    return this.#iterationCounter
+  }
  
    DFSAlgorithm() {
      let state = [this.#problem.startState, []];
@@ -13,6 +20,7 @@ export default class DeapthFirstSearch {
      const visited = new Set();
  
      while (stack.length > 0) {
+      this.#iterationCounter = visited.size
        let node = stack.shift();
        visited.add(node[0].hash);
        for (const action of this.#problem.actions(node[0])) {
@@ -38,5 +46,12 @@ export default class DeapthFirstSearch {
      console.log('No sollution');
      return false;
    }
+
+   run(){
+    return this.DFSAlgorithm()
+  }
  }
- 
+
+
+
+

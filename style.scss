@@ -1,0 +1,45 @@
+#root{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#formsSection{
+    display: flex;
+    flex-direction: column;
+    border: 2px dotted gray;
+    font-size: large;
+
+    #MazeGenerationForm{
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        border-bottom: 3px solid gray;
+
+        input{
+            width: 60%;
+        }
+
+        #submitMaze{
+            align-self: center;
+        }
+    }
+}
+
+#searchForm{
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    // border-bottom: 3px solid gray;
+
+    #solveGame{
+        align-self: center;
+    }
+
+    #runDemo{
+        align-self: center;
+    }
+}

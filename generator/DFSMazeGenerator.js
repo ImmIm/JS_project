@@ -3,15 +3,38 @@ import Maze3dGenerator from './maze3DGenerator.js';
 
 export default class DFSMazeGenerator extends Maze3dGenerator {
 
+  #start
+  #goal
   constructor(row, col, layer) {
     super(row, col, layer);
+    this.maze = this.generateDefaultBoard();
+
+    this.#start = this.generateRandomPoint('start');
+    this.#goal = this.generateRandomPoint('finish');
+    this.measureAlgorithmTime()
+
+  }
+
+  set start(start){
+    this.#start = start
+  }
+
+  get start(){
+    return this.#start
+  }
+
+  set goal(goal){
+    this.#goal = goal
+  }
+
+  get goal(){
+    return this.#goal
   }
 
   generate() {
-    this.generateDefaultBoard();
 
-    let cell = this.generateRandomPoint('start');
-    let finish = this.generateRandomPoint('finish');
+    let cell = this.#start
+    let finish = this.#goal
     let stack = [];
     let visited = new Set();
 
@@ -38,7 +61,6 @@ export default class DFSMazeGenerator extends Maze3dGenerator {
       let newLayer = cell.layer + route[0];
       let newRow = cell.row + route[1];
       let newColumn = cell.column + route[2];
-      console.log(newLayer, newRow, newColumn);
       if (
         newLayer >= 0 &&
         newLayer < this.layers &&

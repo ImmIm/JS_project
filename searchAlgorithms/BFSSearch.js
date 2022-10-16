@@ -1,8 +1,15 @@
 export default class BreadthFirstSearch {
   #problem;
+  #iterationCounter
 
   constructor(problem) {
     this.#problem = problem;
+    this.#iterationCounter = 0
+
+  }
+
+  get iterationCounter(){
+    return this.#iterationCounter
   }
 
   BFSAlgorithm() {
@@ -13,6 +20,7 @@ export default class BreadthFirstSearch {
     const visited = new Set();
 
     while (queue.length > 0) {
+      this.#iterationCounter = visited.size
       let node = queue.pop();
       visited.add(node[0].hash);
       for (const action of this.#problem.actions(node[0])) {
@@ -38,4 +46,12 @@ export default class BreadthFirstSearch {
     console.log('No sollution');
     return false;
   }
+
+  run(){
+    return this.BFSAlgorithm()
+  }
 }
+
+
+
+ 
