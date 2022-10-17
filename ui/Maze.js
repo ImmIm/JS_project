@@ -55,7 +55,6 @@ export default class Maze {
     this.#currentLayer = layer
     this.createMazeElement();
     this.#mainMaze = this.#otherMazes[layer];
-    console.log(this.#otherMazes[layer]);
     this.#mainMaze.style.height = '50%';
     this.#mainMaze.style.aspectRatio = '1/1';
     let additionalMazes = this.#otherMazes.filter((v, i) => i != layer);
