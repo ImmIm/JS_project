@@ -79,25 +79,26 @@ export default class Maze {
 
     const cell = document.createElement('div');
     if (!mazeCell['right']) {
-      cell.style.borderRight = '2px solid black';
+      cell.style.borderRight = '1px solid black';
     }
     if (!mazeCell['left']) {
-      cell.style.borderLeft = '2px solid black';
+      cell.style.borderLeft = '1px solid black';
     }
     if (!mazeCell['forward']) {
-      cell.style.borderTop = '2px solid black';
+      cell.style.borderTop = '1px solid black';
     }
     if (!mazeCell['backward']) {
-      cell.style.borderBottom = '2px solid black';
+      cell.style.borderBottom = '1px solid black';
     }
     if (this.#maze.maze[k][i][j].value === 'start') {
       cell.style.backgroundImage = 'url(./Assets/Start.png)';
       cell.style.backgroundSize = 'cover'
-
     }
 
     if(k > 0){
         cell.style.borderColor = 'red'
+    }else{
+        cell.style.borderColor = 'black'
     }
     if (this.#maze.maze[k][i][j].value === 'finish') {
         cell.style.backgroundImage = 'url(./Assets/finish.png)';

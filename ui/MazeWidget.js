@@ -122,6 +122,10 @@ export default class MazeWidget {
   renderWidget() {
     this.#root.innerHTML += this.#form;
 
+    const player = document.createElement('div')
+
+    player.style.width
+
     const generationFormData = document.getElementById('MazeGenerationForm');
 
     generationFormData.addEventListener('submit', (e) => {
@@ -187,7 +191,6 @@ export default class MazeWidget {
     let mazeElement;
 
     this.#maze = new this.#generator(rows, columns, layers);
-    this.#maze.generate();
     mazeElement = new Maze(this.#maze);
     return mazeElement.renderMaze(this.#maze.start.layer);
   }

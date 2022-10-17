@@ -88,6 +88,8 @@ export default class WilsonMazeGenerator extends Maze3dGenerator {
         }
       }
 
+
+
       for (let node of path) {
         visited.add(node[0].coordinate);
         let way = node[0];
@@ -96,7 +98,7 @@ export default class WilsonMazeGenerator extends Maze3dGenerator {
         this.maze[way.layer + node[1][0]][way.row + node[1][1]][
           way.column + node[1][2]
         ].deleteWall(oppositeDirection);
-        visited.delete(node[0]);
+        // visited.add(node[0].coordinate);
       }
 
       cell = unvisited.pop();
