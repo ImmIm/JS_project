@@ -185,6 +185,7 @@ export default class MazeWidget {
               ][this.#currentNode.column + way[2]];
 
             const nextCell = this.#currentNode;
+            this.#currentLayer = nextCell.layer;
 
             this.movePlayer(nextCell);
           }
@@ -207,13 +208,12 @@ export default class MazeWidget {
               this.#generator = this.getGeneratorConstructor(
                 document.querySelector('#generators').value
               );
-
               this.#root.append(
                 this.renderMaze(this.#layers, this.#rows, this.#columns)
               );
-
-              this.movePlayer(nextCell);
             }
+
+            this.movePlayer(nextCell);
 
             this.#currentNode =
               this.maze.maze[this.#currentNode.layer][this.#currentNode.row][
@@ -235,7 +235,7 @@ export default class MazeWidget {
 
         const searchEngine = new searchEngineConstructor(adaptedMaze);
 
-        this.solvingMoves(searchEngine.run())
+        this.solvingMoves(searchEngine.run());
         console.log(searchEngine.run());
       } else {
         console.log('You need to generate maze firstly');
@@ -268,7 +268,7 @@ export default class MazeWidget {
     }
 
     mazeElement = new Maze(this.#maze);
-    if (!this.#currentLayer) {
+    if (this.#currentLayer === undefined) {
       this.#currentLayer = this.#maze.start.layer;
     }
 
@@ -276,6 +276,7 @@ export default class MazeWidget {
   }
 
   movePlayer(nextCell) {
+    this.#currentLayer = nextCell.layer;
     this.#player.putPlayer(nextCell.row, nextCell.column, nextCell.layer);
   }
 
@@ -321,11 +322,16 @@ export default class MazeWidget {
     let count = 0;
     const int = setInterval(() => {
       let cell = path[count];
-      this.movePlayer(cell);
+
+      if (path[count].value === 'finish') {
+        this.movePlayer(cell);
+        console.log('Finish');
+        clearInterval(int);
+      }
       count++;
 
       if (path.length !== count) {
-        if (cell.layer !== path[count].layer) {
+        if (cell.layer !== this.#currentLayer) {
           this.#currentLayer = cell.layer;
           const prevMaze = document.querySelector('.Maze-container');
           if (prevMaze) {
@@ -337,11 +343,28 @@ export default class MazeWidget {
           this.#root.append(
             this.renderMaze(this.#layers, this.#rows, this.#columns)
           );
+
+          this.movePlayer(cell);
+        } else {
+          this.movePlayer(cell);
         }
       }
       if (count === path.length) {
         clearInterval(int);
       }
-    }, 1500);
+    }, 500);
+
+    //         const prevMaze = document.querySelector('.Maze-container');
+    //         if (prevMaze) {
+    //           prevMaze.remove();
+    //           this.#generator = this.getGeneratorConstructor(
+    //             document.querySelector('#generators').value
+    //           );
+    //           this.#root.append(
+    //             this.renderMaze(this.#layers, this.#rows, this.#columns)
+    //           );
+    //         }
+
+    //         this.movePlayer(nextCell);
   }
 }
