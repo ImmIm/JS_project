@@ -3,8 +3,8 @@ import Searchable from './Searchable.js';
 export default class mazeAdapter extends Searchable {
   #maze;
 
-  constructor(maze) {
-    super(maze.start, maze.goal);
+  constructor(maze, start = maze.start) {
+    super(start, maze.goal);
     this.#maze = maze.maze;
   }
 

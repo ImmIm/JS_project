@@ -131,6 +131,8 @@ export default class Maze {
 
     cell.style.gridColumn = j + 1;
     cell.style.gridRow = i + 1;
+
+    cell.id = `xy${k}/${i}/${j}`
     container.appendChild(cell);
   }
 }
