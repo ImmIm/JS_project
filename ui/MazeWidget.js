@@ -7,6 +7,7 @@ import BreadthFirstSearch from '../searchAlgorithms/BFSSearch.js';
 import DeapthFirstSearch from '../searchAlgorithms/DFSSearch.js';
 import SearchDemo from '../searchAlgorithms/SearchDemo.js';
 import Maze from './Maze.js';
+import Player from './Player.js';
 
 export default class MazeWidget {
   #form = `<section id="formsSection">
@@ -86,7 +87,9 @@ export default class MazeWidget {
   #columns;
   #generator;
   #currentLayer;
+  #currentNode;
   #search;
+  #player;
 
   constructor(root) {
     this.#root = root;
@@ -122,10 +125,6 @@ export default class MazeWidget {
   renderWidget() {
     this.#root.innerHTML += this.#form;
 
-    const player = document.createElement('div')
-
-    player.style.width
-
     const generationFormData = document.getElementById('MazeGenerationForm');
 
     generationFormData.addEventListener('submit', (e) => {
@@ -150,6 +149,87 @@ export default class MazeWidget {
           this.#generator
         )
       );
+
+      this.#currentNode = this.#maze.start;
+      this.#currentLayer = this.#maze.start.layer;
+
+      this.#player = new Player();
+      this.#player.putPlayer(
+        this.#maze.start.row,
+        this.#maze.start.column,
+        this.#maze.start.layer
+      );
+
+      document.addEventListener('keydown', (e) => {
+        const directions = new Map([
+          ['ArrowRight', [0, 0, 1, 'right']],
+          ['ArrowLeft', [0, 0, -1, 'left']],
+          ['ArrowUp', [0, -1, 0, 'forward']],
+          ['ArrowDown', [0, 1, 0, 'backward']],
+          ['KeyQ', [-1, 0, 0, 'up']],
+          ['KeyA', [1, 0, 0, 'down']],
+        ]);
+
+        if (directions.has(e.code)) {
+          const way = directions.get(e.code);
+          if (
+            (e.code === 'ArrowRight' &&
+              this.#currentNode.directions['right']) ||
+            (e.code === 'ArrowLeft' && this.#currentNode.directions['left']) ||
+            (e.code === 'ArrowUp' && this.#currentNode.directions['forward']) ||
+            (e.code === 'ArrowDown' && this.#currentNode.directions['backward'])
+          ) {
+            this.#currentNode =
+              this.maze.maze[this.#currentNode.layer + way[0]][
+                this.#currentNode.row + way[1]
+              ][this.#currentNode.column + way[2]];
+
+            this.#player.putPlayer(
+              this.#currentNode.row,
+              this.#currentNode.column,
+              this.#currentNode.layer
+            );
+          }
+          console.log(this.#currentNode, this.#currentLayer);
+
+          if (
+            (e.code === 'KeyQ' && this.#currentNode.directions['up']) ||
+            (e.code === 'KeyA' && this.#currentNode.directions['down'])
+          ) {
+            this.#currentNode =
+              this.maze.maze[this.#currentNode.layer + way[0]][
+                this.#currentNode.row + way[1]
+              ][this.#currentNode.column + way[2]];
+
+            this.#currentLayer = this.#currentNode.layer;
+
+            console.log(this.#currentNode, this.#currentLayer);
+
+            const prevMaze = document.querySelector('.Maze-container');
+            if (prevMaze) {
+              prevMaze.remove();
+              this.#generator = this.getGeneratorConstructor(
+                document.querySelector('#generators').value
+              );
+
+              this.#root.append(
+                this.renderMaze(this.#layers, this.#rows, this.#columns)
+              );
+            }
+
+            this.#currentNode =
+              this.maze.maze[this.#currentNode.layer][this.#currentNode.row][
+                this.#currentNode.column
+              ];
+
+            this.#player.putPlayer(
+              this.#currentNode.row,
+              this.#currentNode.column,
+              this.#currentNode.layer
+            );
+          }
+        }
+      });
     });
 
     const searchForm = document.querySelector('#searchForm');
@@ -189,10 +269,16 @@ export default class MazeWidget {
 
   renderMaze(layers, rows, columns) {
     let mazeElement;
+    if (!this.#maze) {
+      this.#maze = new this.#generator(rows, columns, layers);
+    }
 
-    this.#maze = new this.#generator(rows, columns, layers);
     mazeElement = new Maze(this.#maze);
-    return mazeElement.renderMaze(this.#maze.start.layer);
+    if (!this.#currentLayer) {
+      this.#currentLayer = this.#maze.start.layer;
+    }
+
+    return mazeElement.renderMaze(this.#currentLayer);
   }
 
   getGeneratorConstructor(generator) {
