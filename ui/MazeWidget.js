@@ -184,14 +184,10 @@ export default class MazeWidget {
                 this.#currentNode.row + way[1]
               ][this.#currentNode.column + way[2]];
 
-            this.#player.putPlayer(
-              this.#currentNode.row,
-              this.#currentNode.column,
-              this.#currentNode.layer
-            );
-          }
-          console.log(this.#currentNode, this.#currentLayer);
+            const nextCell = this.#currentNode;
 
+            this.movePlayer(nextCell);
+          }
           if (
             (e.code === 'KeyQ' && this.#currentNode.directions['up']) ||
             (e.code === 'KeyA' && this.#currentNode.directions['down'])
@@ -201,9 +197,9 @@ export default class MazeWidget {
                 this.#currentNode.row + way[1]
               ][this.#currentNode.column + way[2]];
 
-            this.#currentLayer = this.#currentNode.layer;
+            const nextCell = this.#currentNode;
 
-            console.log(this.#currentNode, this.#currentLayer);
+            this.#currentLayer = this.#currentNode.layer;
 
             const prevMaze = document.querySelector('.Maze-container');
             if (prevMaze) {
@@ -215,18 +211,14 @@ export default class MazeWidget {
               this.#root.append(
                 this.renderMaze(this.#layers, this.#rows, this.#columns)
               );
+
+              this.movePlayer(nextCell);
             }
 
             this.#currentNode =
               this.maze.maze[this.#currentNode.layer][this.#currentNode.row][
                 this.#currentNode.column
               ];
-
-            this.#player.putPlayer(
-              this.#currentNode.row,
-              this.#currentNode.column,
-              this.#currentNode.layer
-            );
           }
         }
       });
@@ -236,12 +228,14 @@ export default class MazeWidget {
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (this.#generator) {
-        const adaptedMaze = new mazeAdapter(this.#maze);
+        const adaptedMaze = new mazeAdapter(this.#maze, this.#currentNode);
         const searchEngineConstructor = this.getSearchEngine(
           document.querySelector('#searchAlgo').value
         );
 
         const searchEngine = new searchEngineConstructor(adaptedMaze);
+
+        this.solvingMoves(searchEngine.run())
         console.log(searchEngine.run());
       } else {
         console.log('You need to generate maze firstly');
@@ -281,6 +275,10 @@ export default class MazeWidget {
     return mazeElement.renderMaze(this.#currentLayer);
   }
 
+  movePlayer(nextCell) {
+    this.#player.putPlayer(nextCell.row, nextCell.column, nextCell.layer);
+  }
+
   getGeneratorConstructor(generator) {
     switch (generator) {
       case 'Wilson':
@@ -317,5 +315,33 @@ export default class MazeWidget {
         console.err('Unexpected error');
         break;
     }
+  }
+
+  solvingMoves(path) {
+    let count = 0;
+    const int = setInterval(() => {
+      let cell = path[count];
+      this.movePlayer(cell);
+      count++;
+
+      if (path.length !== count) {
+        if (cell.layer !== path[count].layer) {
+          this.#currentLayer = cell.layer;
+          const prevMaze = document.querySelector('.Maze-container');
+          if (prevMaze) {
+            prevMaze.remove();
+            this.#generator = this.getGeneratorConstructor(
+              document.querySelector('#generators').value
+            );
+          }
+          this.#root.append(
+            this.renderMaze(this.#layers, this.#rows, this.#columns)
+          );
+        }
+      }
+      if (count === path.length) {
+        clearInterval(int);
+      }
+    }, 1500);
   }
 }

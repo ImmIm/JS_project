@@ -15,6 +15,10 @@ export default class Searchable {
     return this.#startState;
   }
 
+  set startState(start){
+    this.startState = start
+  }
+
   get goalState() {
     return this.#goalState;
   }
